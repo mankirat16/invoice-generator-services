@@ -8,25 +8,24 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return ({ message: "Invalid email or password" });
     }
-
+    
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return ({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET || "your_secret_key",
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET || "your_secret_key", { expiresIn: "1h" });
 
-    return res.status(200).json({
+    console.log(token);
+    
+    return {
       message: "Login successful",
       token,
       userId: user._id,
-    });
+    };
+
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({ message: "Server error", error: error.message });
@@ -47,19 +46,15 @@ exports.signup = async (req, res) => {
     const user = new User({ email, password: hashedPassword });
     await user.save();
 
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET || "your_secret_key",
-      { expiresIn: "1h" }
-    );
+    const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET || "your_secret_key", { expiresIn: "1h" });
 
-    return res.status(201).json({
+    return  ({
       message: "Signup successful",
       token,
       userId: user._id,
     });
   } catch (error) {
     console.error("Signup error:", error);
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return ({ message: "Server error", error: error.message });
   }
 };

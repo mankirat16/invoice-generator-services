@@ -15,8 +15,10 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to invoice generator services" });
 });
 
-app.listen(8080, (err) => {
-  if (!err) {
-    console.log("Listening on port 8080");
-  }
-});
+// app.listen(8080, (err) => {
+//   if (!err) {
+//     console.log("Listening on port 8080");
+//   }
+// });
+
+module.exports = app;
