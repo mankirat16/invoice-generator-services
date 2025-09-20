@@ -6,10 +6,12 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 const userRouter = require("./routes/user.routes");
+const reportsRouter = require("./routes/report.routes");
 
 connectDB();
 
 app.use("/users", userRouter);
+app.use("/reports", reportsRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to invoice generator services" });

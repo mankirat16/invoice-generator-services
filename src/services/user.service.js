@@ -7,25 +7,25 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
+    console.log(user, email, password);
     if (!user) {
-      return ({ message: "Invalid email or password" });
+      throw new Error({ message: "Invalid email or password" });
     }
-    
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return ({ message: "Invalid email or password" });
+      return { message: "Invalid email or password" };
     }
 
     const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET || "your_secret_key", { expiresIn: "1h" });
 
     console.log(token);
-    
+
     return {
       message: "Login successful",
       token,
       userId: user._id,
     };
-
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({ message: "Server error", error: error.message });
@@ -48,13 +48,24 @@ exports.signup = async (req, res) => {
 
     const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET || "your_secret_key", { expiresIn: "1h" });
 
-    return  ({
+    return {
       message: "Signup successful",
       token,
       userId: user._id,
-    });
+    };
   } catch (error) {
     console.error("Signup error:", error);
-    return ({ message: "Server error", error: error.message });
+    throw error;
+  }
+};
+
+exports.getUserReports = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const user = await User.findOne({ id }).populate("Reports");
+  } catch (err) {
+    console.error(err);
+    throw Error;
   }
 };
